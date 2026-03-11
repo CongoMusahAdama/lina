@@ -37,7 +37,7 @@ const ProductSchema = new mongoose.Schema({
     images: [String],
     sizes: {
         type: [String],
-        default: ['M', 'L']
+        default: ['250ml', '500ml']
     },
     status: {
         type: String,

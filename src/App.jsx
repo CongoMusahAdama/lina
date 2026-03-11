@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   Link,
+  Navigate,
   useLocation,
   useNavigate,
   useSearchParams,
@@ -101,27 +102,28 @@ const CartProvider = ({ children }) => {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const addToCart = (product) => {
+  const addToCart = (product, selectedSize) => {
     setCartItems((prev) => {
-      const existing = prev.find((i) => i.id === product.id);
+      const cartId = selectedSize ? `${product._id || product.id}-${selectedSize}` : (product._id || product.id);
+      const existing = prev.find((i) => i.cartId === cartId);
       if (existing)
         return prev.map((i) =>
-          i.id === product.id ? { ...i, qty: i.qty + 1 } : i,
+          i.cartId === cartId ? { ...i, qty: i.qty + 1 } : i,
         );
-      return [...prev, { ...product, qty: 1 }];
+      return [...prev, { ...product, cartId, selectedSize, qty: 1 }];
     });
     addToast(product.name);
     // Explicitly open cart when adding to ensure visibility
     setIsCartOpen(true);
   };
 
-  const removeFromCart = (id) =>
-    setCartItems((prev) => prev.filter((i) => i.id !== id));
+  const removeFromCart = (cartId) =>
+    setCartItems((prev) => prev.filter((i) => i.cartId !== cartId));
 
-  const updateQty = (id, delta) => {
+  const updateQty = (cartId, delta) => {
     setCartItems((prev) =>
       prev.map((i) =>
-        i.id === id ? { ...i, qty: Math.max(1, i.qty + delta) } : i,
+        i.cartId === cartId ? { ...i, qty: Math.max(1, i.qty + delta) } : i,
       ),
     );
   };
@@ -220,22 +222,33 @@ const ProductDetailModal = () => {
   const { addToCart, setIsCartOpen } = useCart();
   const [justAdded, setJustAdded] = useState(false);
   const [qty, setQty] = useState(1);
+  const [size, setSize] = useState("");
 
   useEffect(() => {
-    if (selectedProduct) setQty(1);
+    if (selectedProduct) {
+      setQty(1);
+      // Determine default size or empty
+      const availableSizes = selectedProduct.sizes || [];
+      if (availableSizes.length > 0) {
+        setSize(availableSizes[0]); // Default to first available size
+      } else {
+        setSize("");
+      }
+    }
   }, [selectedProduct]);
 
   if (!selectedProduct) return null;
 
   const handleAdd = () => {
-    for (let i = 0; i < qty; i++) {
-      addToCart(selectedProduct);
+    const qtyNum = parseInt(qty) || 1;
+    for (let i = 0; i < qtyNum; i++) {
+      addToCart(selectedProduct, size);
     }
+
     setJustAdded(true);
     setTimeout(() => {
       setJustAdded(false);
       closeProduct();
-      setIsCartOpen(true);
     }, 800);
   };
 
@@ -247,6 +260,7 @@ const ProductDetailModal = () => {
     badge,
     image,
     comesWithPouch,
+    sizes,
   } = selectedProduct;
   const finalDiscountPrice =
     discountPrice ||
@@ -294,6 +308,29 @@ const ProductDetailModal = () => {
               )}
             </p>
             {/* Pouch message removed */}
+            {sizes && sizes.length > 0 && (
+              <div className="modal-sizes-container">
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', display: 'block', marginBottom: '0.5rem' }}>Select Size</span>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  {sizes.map((s, idx) => (
+                    <button
+                      key={idx}
+                      className={`size-chip-premium ${size === s ? 'active' : ''}`}
+                      onClick={() => setSize(s)}
+                      style={{
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        border: size === s ? '1px solid #013220' : '1px solid #e2e8f0',
+                        background: size === s ? '#013220' : '#f8fafc',
+                        color: size === s ? 'white' : '#013220'
+                      }}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="modal-qty-selector">
               <span>Quantity</span>
@@ -356,133 +393,6 @@ const ProductDetailModal = () => {
   );
 };
 
-// Dynamic product data will be fetched from backend.
-const allProducts = [
-  {
-    id: "prod1",
-    name: "Lina's Clarifying Shampoo",
-    price: 85,
-    category: "Hair Care",
-    description:
-      "Deeply cleanse and refresh your scalp with our signature clarifying shampoo, formulated with organic botanical extracts for ultimate purity.",
-    image: "/product1.png",
-    badge: "New Arrival",
-    comesWithPouch: true,
-  },
-  {
-    id: "prod2",
-    name: "Lina's Minty Detangling Conditioner",
-    price: 90,
-    category: "Hair Care",
-    description:
-      "Experience the cooling sensation of mint while effortlessly detangling your locks for a smooth, manageable, and healthy finish.",
-    image: "/product2.png",
-    badge: "Best Seller",
-    comesWithPouch: true,
-  },
-  {
-    id: "prod3",
-    name: "Stay Soft Leave-In Conditioner",
-    price: 75,
-    category: "Moisturizers",
-    description:
-      "Lock in moisture all day long with our lightweight, non-greasy leave-in formula that keeps your hair soft, shiny, and hydrated.",
-    image: "/product3.png",
-    comesWithPouch: true,
-  },
-  {
-    id: "prod4",
-    name: "Lina's Deep Conditioner",
-    price: 110,
-    category: "Moisturizers",
-    description:
-      "Treat your hair to an intensive moisture mask that restores strength, elasticity, and luster to dry or damaged strands.",
-    image: "/product4.png",
-    comesWithPouch: true,
-  },
-  {
-    id: "prod5",
-    name: "Moisturizing Hair Growth Butter",
-    price: 125,
-    category: "Hair Growth",
-    description:
-      "Our rich, whipped butter blend provides ultimate hydration while promoting robust hair growth and scalp health.",
-    image: "/products5.png",
-    badge: "Limited Edition",
-    comesWithPouch: true,
-  },
-  {
-    id: "prod6",
-    name: "Hair Growth Elixir",
-    price: 150,
-    category: "Hair Growth",
-    description:
-      "A potent concentrate of natural oils and vitamins designed to stimulate hair follicles and accelerate natural hair growth.",
-    image: "/product6.png",
-    badge: "Signature",
-    comesWithPouch: true,
-  },
-  {
-    id: "prod7",
-    name: "Ayurvedic Hair Mask",
-    price: 95,
-    category: "Hair Care",
-    description:
-      "Ancient wisdom meets modern science in this herbal mask that deeply nourishes, detoxifies, and strengthens the hair.",
-    image: "/product7.png",
-    comesWithPouch: true,
-  },
-  {
-    id: "prod8",
-    name: "Lina's Healing Hair Balm",
-    price: 80,
-    category: "Hair Care",
-    description:
-      "Soothe your scalp and seal split ends with our transformative healing balm, perfect for daily protection and shine.",
-    image: "/product8.png",
-    comesWithPouch: true,
-  },
-  {
-    id: "prod9",
-    name: "Lina's Beard Booster Oil",
-    price: 70,
-    category: "Men",
-    description:
-      "Specially formulated for men, this oil softens facial hair, reduces itchiness, and promotes a thicker, healthier beard.",
-    image: "/product9.png",
-    comesWithPouch: true,
-  },
-  {
-    id: "prod10",
-    name: "Anti-Dandruff Shampoo",
-    price: 85,
-    category: "Anti-Dandruff",
-    description:
-      "Say goodbye to flakes and scalp discomfort with our gentle yet effective anti-dandruff clarifying treatment.",
-    image: "/product1.png",
-    comesWithPouch: true,
-  },
-  {
-    id: "prod11",
-    name: "Anti-Dandruff Oil",
-    price: 65,
-    category: "Anti-Dandruff",
-    description:
-      "A soothing, targeted scalp oil that eliminates dandruff at the root while providing instant cooling relief.",
-    image: "/product2.png",
-    comesWithPouch: true,
-  },
-  {
-    id: "prod12",
-    name: "Anti-Dandruff Cream",
-    price: 75,
-    category: "Anti-Dandruff",
-    description:
-      "Intense scalp hydration that prevents dryness and flakes, creating the perfect foundation for healthy hair growth.",
-    image: "/product3.png",
-    comesWithPouch: true,
-  },
-];
 
 // --- CUSTOM CURRENCY ICONS ---
 const ReceiptCedi = ({ size = 20, ...props }) => (
@@ -782,14 +692,9 @@ const Hero = () => {
       <div className="hero-bg-accent hero-bg-accent-2"></div>
 
       <img
-        src="/image_copy_3.png"
-        alt="Lina Hair Care Products"
-        className="hero-image desktop-only"
-      />
-      <img
         src="/hero1.png"
         alt="Lina Hair Care Products"
-        className="hero-image mobile-only"
+        className="hero-image active"
       />
       <div className="hero-overlay"></div>
 
@@ -800,7 +705,7 @@ const Hero = () => {
           </span>
           <h1 className="hero-slogan serif fade-in-delayed">
             Your journey to healthy hair starts with{" "}
-            <span className="text-teal-italic">Lina's touch.</span>
+            <span className="text-yellow-accent italic">Lina's touch.</span>
           </h1>
           <div className="hero-actions fade-in-delayed-more">
             <Link to="/shop" className="cta-button-premium">
@@ -1124,13 +1029,13 @@ const CartDrawer = () => {
     if (cartItems.length === 0) return "";
     const lines = cartItems.map(
       (i) =>
-        `• ${i.name} x${i.qty} — GH₵${(parseFloat(i.price) * i.qty).toFixed(2)}`,
+        `• ${i.name} ${i.selectedSize ? `(${i.selectedSize}) ` : ""}x${i.qty} — GH₵${(parseFloat(i.price) * i.qty).toFixed(2)}`,
     );
     return `Hi Lina Hair Care Products! I'd like to place an order:\n\n${lines.join("\n")}\n\n*Total: GH₵${cartTotal.toFixed(2)}*\n\nPlease confirm my order. Thank you! 🙏`;
   };
 
   const msg = buildOrderMessage().replace(/GH₵/g, "GHS");
-  const waUrl = `https://wa.me/233552739280?text=${encodeURIComponent(msg)}`;
+  const waUrl = `https://wa.me/233551082163?text=${encodeURIComponent(msg)}`;
   const fbUrl = `https://m.me/LinaHairCare?ref=${encodeURIComponent("ORDER_CART")}`;
   const igUrl = `https://ig.me/m/linahaircare`;
   const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(waUrl)}`;
@@ -1192,7 +1097,7 @@ const CartDrawer = () => {
                 </span>
               </div>
               {cartItems.map((item) => (
-                <div key={item.id} className="cart-item">
+                <div key={item.cartId} className="cart-item">
                   <img
                     src={item.image}
                     alt={item.name}
@@ -1200,20 +1105,25 @@ const CartDrawer = () => {
                   />
                   <div className="cart-item-info">
                     <p className="cart-item-name">{item.name}</p>
+                    {item.selectedSize && (
+                      <p style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 600, marginTop: '-2px', marginBottom: '4px' }}>
+                        Size: <span style={{ color: '#013220' }}>{item.selectedSize}</span>
+                      </p>
+                    )}
                     <p className="cart-item-price">
                       GH₵{parseFloat(item.price).toFixed(2)}
                     </p>
                     <div className="cart-item-controls">
                       <button
                         className="qty-btn-sm"
-                        onClick={() => updateQty(item.id, -1)}
+                        onClick={() => updateQty(item.cartId, -1)}
                       >
                         <Minus size={12} />
                       </button>
                       <span className="qty-sm">{item.qty}</span>
                       <button
                         className="qty-btn-sm"
-                        onClick={() => updateQty(item.id, 1)}
+                        onClick={() => updateQty(item.cartId, 1)}
                       >
                         <Plus size={12} />
                       </button>
@@ -1225,7 +1135,7 @@ const CartDrawer = () => {
                     </p>
                     <button
                       className="cart-remove-btn"
-                      onClick={() => removeFromCart(item.id)}
+                      onClick={() => removeFromCart(item.cartId)}
                     >
                       <Trash2 size={14} />
                     </button>
@@ -3669,6 +3579,7 @@ const AdminProducts = ({
     comesWithPouch: false,
     images: [],
     discountPercentage: 0,
+    sizes: [],
   });
 
   const handleEdit = (prod) => {
@@ -3683,6 +3594,7 @@ const AdminProducts = ({
       comesWithPouch: !!prod.comesWithPouch,
       images: prod.images || (prod.image ? [prod.image] : []),
       discountPercentage: prod.discountPercentage || 0,
+      sizes: prod.sizes || [],
     });
     setShowModal(true);
   };
@@ -3700,6 +3612,7 @@ const AdminProducts = ({
       comesWithPouch: false,
       images: [],
       discountPercentage: 0,
+      sizes: [],
     });
   };
 
@@ -3802,7 +3715,7 @@ const AdminProducts = ({
       discountPercentage: discPercent,
       discountPrice: calculatedDiscountPrice,
       stock: parseInt(newProd.stock),
-      sizes: ["M", "L"],
+      sizes: Array.isArray(newProd.sizes) ? newProd.sizes : [],
       image: newProd.images[0] || "/midnight.png",
     };
 
@@ -3905,6 +3818,72 @@ const AdminProducts = ({
                           fontSize: "1rem",
                         }}
                       />
+                    </div>
+                    <div className="form-group-premium">
+                      <label
+                        style={{
+                          display: "block",
+                          marginBottom: "0.6rem",
+                          fontSize: "0.9rem",
+                          fontWeight: 700,
+                          color: "#334155",
+                        }}
+                      >
+                        Select Available Sizes
+                      </label>
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "0.75rem",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        {["Small", "Medium", "Big"].map((s) => (
+                          <button
+                            key={s}
+                            type="button"
+                            onClick={() => {
+                              const currentSizes = Array.isArray(newProd.sizes)
+                                ? [...newProd.sizes]
+                                : [];
+                              if (currentSizes.includes(s)) {
+                                setNewProd({
+                                  ...newProd,
+                                  sizes: currentSizes.filter((x) => x !== s),
+                                });
+                              } else {
+                                setNewProd({
+                                  ...newProd,
+                                  sizes: [...currentSizes, s],
+                                });
+                              }
+                            }}
+                            style={{
+                              padding: "0.8rem 1.2rem",
+                              borderRadius: "12px",
+                              border: "1px solid #e2e8f0",
+                              background:
+                                Array.isArray(newProd.sizes) &&
+                                  newProd.sizes.includes(s)
+                                  ? "#013220"
+                                  : "#f8fafc",
+                              color:
+                                Array.isArray(newProd.sizes) &&
+                                  newProd.sizes.includes(s)
+                                  ? "white"
+                                  : "#334155",
+                              fontWeight: 700,
+                              fontSize: "0.85rem",
+                              cursor: "pointer",
+                              transition: "all 0.2s ease",
+                              minWidth: "90px",
+                              textAlign: "center",
+                            }}
+                          >
+                            {s}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                     <div
                       style={{
@@ -4301,6 +4280,7 @@ const AdminProducts = ({
                 <th style={{ width: "50px" }}>#</th>
                 <th>Product</th>
                 <th>Category</th>
+                <th>Sizes</th>
                 <th>Price</th>
                 <th>Stock</th>
                 <th>Status</th>
@@ -4336,6 +4316,13 @@ const AdminProducts = ({
                       </div>
                     </td>
                     <td data-label="Category">{prod.category}</td>
+                    <td data-label="Sizes">
+                      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                        {(prod.sizes || []).map((s, idx) => (
+                          <span key={idx} className="table-size-tag">{s}</span>
+                        ))}
+                      </div>
+                    </td>
                     <td data-label="Price" style={{ fontWeight: 600 }}>
                       GH₵{prod.price}
                     </td>
@@ -5882,9 +5869,26 @@ const CheckoutPage = ({ addOrder }) => {
   );
 };
 
+// --- PROTECTED ROUTE GUARD ---
+// Blocks /admin/* access until auth check is done.
+// If not logged in → redirects to /auth.
+const ProtectedRoute = ({ user, loading, children }) => {
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="loader-premium"></div>
+      </div>
+    );
+  }
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+  return children;
+};
+
 const App = () => {
   // --- ADMIN & AUTH STATE ---
-  const [products, setProducts] = useState(allProducts);
+  const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([
     "Hair Care",
     "Moisturizers",
@@ -5939,8 +5943,6 @@ const App = () => {
           );
           return [...new Set(normalized)];
         });
-      } else {
-        setProducts(allProducts);
       }
 
       // Verify Auth (Cookie-based)
@@ -6153,7 +6155,7 @@ const App = () => {
               <Route
                 path="/admin/*"
                 element={
-                  user ? (
+                  <ProtectedRoute user={user} loading={loading}>
                     <AdminDashboard
                       products={products}
                       categories={categories}
@@ -6168,9 +6170,7 @@ const App = () => {
                       user={user}
                       onLogout={handleLogout}
                     />
-                  ) : (
-                    <AuthPage onLogin={handleLogin} />
-                  )
+                  </ProtectedRoute>
                 }
               />
             </Routes>

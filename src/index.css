@@ -43,6 +43,10 @@ h4,
   letter-spacing: -0.02em;
 }
 
+.text-yellow-accent {
+  color: var(--yellow-accent) !important;
+}
+
 a {
   text-decoration: none;
   color: inherit;

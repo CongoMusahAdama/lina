@@ -6,9 +6,10 @@ const router = express.Router();
 
 router.route('/')
     .get(getCategories)
-    .post(createCategory); // Add auth middleware if needed
+    .post(protect, createCategory);
 
 router.route('/:id')
-    .delete(deleteCategory); // Add auth middleware if needed
+    .delete(protect, deleteCategory);
 
 module.exports = router;
+

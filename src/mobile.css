@@ -22,6 +22,7 @@
 
 /* ── Base & Global ──────────────────────────────────── */
 @media (max-width: 767px) {
+
   /* Ensure tap targets are big enough & text is readable */
   /* Lock horizontal scroll to prevent "screen moving to the side" */
   html,
@@ -146,12 +147,10 @@
     max-width: 100% !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    background: linear-gradient(
-      160deg,
-      #0d1f1f 0%,
-      #1a2f2f 50%,
-      #0f2525 100%
-    ) !important;
+    background: linear-gradient(160deg,
+        #0d1f1f 0%,
+        #1a2f2f 50%,
+        #0f2525 100%) !important;
     z-index: 20000 !important;
   }
 
@@ -273,6 +272,7 @@
    Full-screen, bottom-anchored, absolutely stunning
    ══════════════════════════════════════════════════════ */
 @media (max-width: 767px) {
+
   /* ── Full screen canvas ── */
   .hero {
     height: 100svh !important;
@@ -285,11 +285,16 @@
 
   /* ── Cinematic model photo – face centered right ── */
   .hero-image {
-    object-position: 72% 15% !important;
-    opacity: 1 !important;
+    object-position: center !important;
+    opacity: 0 !important;
     transform: scale(1.06) !important;
-    animation: mobileHeroPan 12s ease-in-out infinite alternate !important;
-    will-change: transform;
+    transition: opacity 1.5s ease-in-out !important;
+    will-change: opacity;
+  }
+
+  .hero-image.active {
+    opacity: 0.8 !important;
+    /* Slightly transparent on mobile for contrast */
   }
 
   @keyframes mobileHeroPan {
@@ -305,19 +310,17 @@
   /* ── Multi-layer cinematic overlay ── */
   .hero-overlay {
     background:
-            /* Bottom-up dark gradient – anchors text readability */
-      linear-gradient(
-        to top,
+      /* Bottom-up dark gradient – anchors text readability */
+      linear-gradient(to top,
         rgba(0, 0, 0, 0.96) 0%,
         rgba(0, 0, 0, 0.82) 22%,
         rgba(0, 0, 0, 0.5) 45%,
         rgba(0, 0, 0, 0.18) 68%,
-        transparent 100%
-      ),
+        transparent 100%),
       /* Teal atmosphere – left edge luxury glow */
-        linear-gradient(125deg, rgba(0, 128, 128, 0.3) 0%, transparent 50%),
+      linear-gradient(125deg, rgba(0, 128, 128, 0.3) 0%, transparent 50%),
       /* Top vignette – keeps header area dark */
-        linear-gradient(to bottom, rgba(0, 0, 0, 0.55) 0%, transparent 30%) !important;
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.55) 0%, transparent 30%) !important;
   }
 
   /* ── Ambient teal glows – alive & premium ── */
@@ -387,11 +390,9 @@
     text-align: left !important;
     padding-right: 1.75rem !important;
     /* Very subtle frosted glass base at bottom */
-    background: linear-gradient(
-      to top,
-      rgba(0, 0, 0, 0.35) 0%,
-      transparent 100%
-    ) !important;
+    background: linear-gradient(to top,
+        rgba(0, 0, 0, 0.35) 0%,
+        transparent 100%) !important;
     position: relative !important;
   }
 
@@ -476,6 +477,24 @@
     bottom: 3px !important;
   }
 
+  .text-yellow-accent.italic {
+    display: inline-block;
+    font-style: italic !important;
+    position: relative !important;
+  }
+
+  .text-yellow-accent.italic::after {
+    content: '' !important;
+    position: absolute !important;
+    bottom: 4px !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 5px !important;
+    background: var(--yellow-accent) !important;
+    opacity: 0.4 !important;
+    z-index: -1 !important;
+  }
+
   /* ── Micro divider between headline & actions ── */
   .hero-content::after {
     content: "";
@@ -532,12 +551,10 @@
     left: -75% !important;
     width: 50% !important;
     height: 200% !important;
-    background: linear-gradient(
-      to right,
-      transparent,
-      rgba(255, 255, 255, 0.22),
-      transparent
-    ) !important;
+    background: linear-gradient(to right,
+        transparent,
+        rgba(255, 255, 255, 0.22),
+        transparent) !important;
     transform: skewX(-25deg) !important;
     animation: ctaShine 3.5s 1s ease-in-out infinite !important;
   }
@@ -667,13 +684,13 @@
   }
 
   /* Section header on mobile */
-  .section-padding.container > .flex.justify-between {
+  .section-padding.container>.flex.justify-between {
     flex-direction: column !important;
     align-items: flex-start !important;
     gap: 0.5rem !important;
   }
 
-  .section-padding.container > .flex.justify-between .reveal:last-child {
+  .section-padding.container>.flex.justify-between .reveal:last-child {
     align-self: flex-start;
   }
 }
@@ -1075,10 +1092,10 @@
 
 /* ── Brand Story Section (2-col grid) ───────────────── */
 @media (max-width: 767px) {
+
   /* The "Grow Your Beautiful Hair" section in HomePage */
-  section.section-padding.container
-    > .grid[style*="gridTemplateColumns: '1fr 1fr'"],
-  section > .container > .grid {
+  section.section-padding.container>.grid[style*="gridTemplateColumns: '1fr 1fr'"],
+  section>.container>.grid {
     grid-template-columns: 1fr !important;
     gap: 2rem !important;
   }
@@ -1089,18 +1106,18 @@
   }
 
   /* Story image */
-  section .grid > div > img[style*="height: '500px'"] {
+  section .grid>div>img[style*="height: '500px'"] {
     height: 260px !important;
     border-radius: var(--mobile-radius) !important;
   }
 
   /* Story heading */
-  section .grid > div > h2:first-of-type {
+  section .grid>div>h2:first-of-type {
     font-size: clamp(2rem, 8vw, 2.8rem) !important;
     margin-bottom: 1.25rem !important;
   }
 
-  section .grid > div > p {
+  section .grid>div>p {
     font-size: 1rem !important;
     line-height: 1.7 !important;
     margin-bottom: 1.5rem !important;
@@ -1109,6 +1126,7 @@
 
 /* ── Category Filter Tabs ───────────────────────────── */
 @media (max-width: 767px) {
+
   /* Make filter tabs scrollable horizontally - REDESIGNED CUTE & PREMIUM */
   .flex.justify-center.gap-8.mt-8 {
     justify-content: flex-start !important;
@@ -1128,7 +1146,7 @@
   }
 
   /* Filter buttons inside that row */
-  .flex.justify-center.gap-8.mt-8 > button {
+  .flex.justify-center.gap-8.mt-8>button {
     flex-shrink: 0 !important;
     padding: 0.75rem 1.75rem !important;
     margin-right: 0 !important;
@@ -1147,12 +1165,12 @@
   }
 
   /* Remove the default underline div if it exists */
-  .flex.justify-center.gap-8.mt-8 > button > div {
+  .flex.justify-center.gap-8.mt-8>button>div {
     display: none !important;
   }
 
   /* Active category pill - Glowing Effect */
-  .flex.justify-center.gap-8.mt-8 > button[style*="teal"] {
+  .flex.justify-center.gap-8.mt-8>button[style*="teal"] {
     background: var(--charcoal) !important;
     color: white !important;
     border-color: var(--charcoal) !important;
@@ -1160,7 +1178,7 @@
     transform: translateY(-2px) !important;
   }
 
-  .flex.justify-center.gap-8.mt-8 > button:active {
+  .flex.justify-center.gap-8.mt-8>button:active {
     transform: scale(0.94) translateY(0) !important;
   }
 }
@@ -1171,11 +1189,11 @@
     padding: 3.5rem 0 !important;
   }
 
-  .testimonial-section > .container > .center-text h2 {
+  .testimonial-section>.container>.center-text h2 {
     font-size: 2.2rem !important;
   }
 
-  .testimonial-section > .container > .center-text {
+  .testimonial-section>.container>.center-text {
     margin-bottom: 2.5rem !important;
   }
 
@@ -1961,12 +1979,10 @@
   }
 
   .large-collection-card .hero-overlay {
-    background: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0.85) 0%,
-      rgba(0, 0, 0, 0.2) 50%,
-      rgba(0, 0, 0, 0.7) 100%
-    ) !important;
+    background: linear-gradient(to bottom,
+        rgba(0, 0, 0, 0.85) 0%,
+        rgba(0, 0, 0, 0.2) 50%,
+        rgba(0, 0, 0, 0.7) 100%) !important;
   }
 
   .collection-overlay-content {
@@ -2307,6 +2323,7 @@
 
 /* ── Micro-animations & Playful Touches ─────────────── */
 @media (max-width: 767px) {
+
   /* Smooth page-level scroll */
   html {
     scroll-behavior: smooth;
@@ -2342,6 +2359,7 @@
   }
 
   @keyframes badgePulse {
+
     0%,
     100% {
       box-shadow: 0 0 0 0 rgba(0, 128, 128, 0.4);
@@ -2360,12 +2378,10 @@
     left: -75%;
     width: 50%;
     height: 200%;
-    background: linear-gradient(
-      to right,
-      transparent,
-      rgba(255, 255, 255, 0.18),
-      transparent
-    );
+    background: linear-gradient(to right,
+        transparent,
+        rgba(255, 255, 255, 0.18),
+        transparent);
     transform: skewX(-25deg);
     animation: btnShine 3s 1.5s ease-in-out;
   }
@@ -2420,6 +2436,7 @@
 
 /* ── iOS Safe Areas ──────────────────────────────────── */
 @media (max-width: 767px) {
+
   /* Prevent content from being under notch/home bar */
   .header {
     padding-top: env(safe-area-inset-top, 0px);
@@ -2436,6 +2453,7 @@
 
 /* ── Accessibility: Focus Visible ───────────────────── */
 @media (max-width: 767px) {
+
   /* Custom focus ring for keyboard navigation on mobile */
   :focus-visible {
     outline: 2px solid var(--teal-primary);
@@ -2647,8 +2665,9 @@
 
 /* ── Global Layout Resets for Mobile ────────────────── */
 @media (max-width: 767px) {
+
   /* Force grids to single column on mobile */
-  .section-padding > .grid,
+  .section-padding>.grid,
   .about-story-grid,
   .values-grid,
   .collections-main-grid,
