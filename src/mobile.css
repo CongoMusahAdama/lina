@@ -285,7 +285,7 @@
 
   /* ── Cinematic model photo – face centered right ── */
   .hero-image {
-    object-position: center !important;
+    object-position: 80% center !important;
     opacity: 0 !important;
     transform: scale(1.06) !important;
     transition: opacity 1.5s ease-in-out !important;
@@ -293,8 +293,8 @@
   }
 
   .hero-image.active {
-    opacity: 0.8 !important;
-    /* Slightly transparent on mobile for contrast */
+    opacity: 1 !important;
+    /* Full clarity for the model photo */
   }
 
   @keyframes mobileHeroPan {
@@ -310,17 +310,16 @@
   /* ── Multi-layer cinematic overlay ── */
   .hero-overlay {
     background:
-      /* Bottom-up dark gradient – anchors text readability */
+      /* Bottom-up dark gradient – tighter at bottom for product clarity */
       linear-gradient(to top,
-        rgba(0, 0, 0, 0.96) 0%,
-        rgba(0, 0, 0, 0.82) 22%,
-        rgba(0, 0, 0, 0.5) 45%,
-        rgba(0, 0, 0, 0.18) 68%,
-        transparent 100%),
+        rgba(0, 0, 0, 0.95) 0%,
+        rgba(0, 0, 0, 0.8) 10%,
+        rgba(0, 0, 0, 0.4) 30%,
+        transparent 60%),
       /* Teal atmosphere – left edge luxury glow */
-      linear-gradient(125deg, rgba(0, 128, 128, 0.3) 0%, transparent 50%),
+      linear-gradient(125deg, rgba(0, 128, 128, 0.25) 0%, transparent 50%),
       /* Top vignette – keeps header area dark */
-      linear-gradient(to bottom, rgba(0, 0, 0, 0.55) 0%, transparent 30%) !important;
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, transparent 25%) !important;
   }
 
   /* ── Ambient teal glows – alive & premium ── */

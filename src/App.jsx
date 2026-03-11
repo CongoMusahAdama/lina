@@ -64,7 +64,7 @@ const API_URL =
   import.meta.env.VITE_API_URL ||
   (window.location.origin.includes("localhost")
     ? "http://localhost:5000/api"
-    : "https://linahaircare.onrender.com/api");
+    : "https://lina-0tkg.onrender.com/api");
 
 const apiRequest = async (endpoint, method = "GET", body = null) => {
   const token = localStorage.getItem("lina_auth_token");
@@ -392,6 +392,138 @@ const ProductDetailModal = () => {
     </div>
   );
 };
+
+
+// Dynamic product data will be fetched from backend.
+const allProducts = [
+  {
+    _id: "prod1",
+    name: "Lina's Clarifying Shampoo",
+    price: 85,
+    category: "Hair Care",
+    description:
+      "Deeply cleanse and refresh your scalp with our signature clarifying shampoo, formulated with organic botanical extracts for ultimate purity.",
+    image: "/product1.png",
+    badge: "New Arrival",
+    comesWithPouch: true,
+    sizes: ["Small", "Medium", "Big"],
+  },
+  {
+    _id: "prod2",
+    name: "Lina's Minty Detangling Conditioner",
+    price: 90,
+    category: "Hair Care",
+    description:
+      "Experience the cooling sensation of mint while effortlessly detangling your locks for a smooth, manageable, and healthy finish.",
+    image: "/product2.png",
+    badge: "Best Seller",
+    comesWithPouch: true,
+    sizes: ["Small", "Medium", "Big"],
+  },
+  {
+    _id: "prod3",
+    name: "Stay Soft Leave-In Conditioner",
+    price: 75,
+    category: "Moisturizers",
+    description:
+      "Lock in moisture all day long with our lightweight, non-greasy leave-in formula that keeps your hair soft, shiny, and hydrated.",
+    image: "/product3.png",
+    comesWithPouch: true,
+  },
+  {
+    _id: "prod4",
+    name: "Lina's Deep Conditioner",
+    price: 110,
+    category: "Moisturizers",
+    description:
+      "Treat your hair to an intensive moisture mask that restores strength, elasticity, and luster to dry or damaged strands.",
+    image: "/product4.png",
+    comesWithPouch: true,
+  },
+  {
+    _id: "prod5",
+    name: "Moisturizing Hair Growth Butter",
+    price: 125,
+    category: "Hair Growth",
+    description:
+      "Our rich, whipped butter blend provides ultimate hydration while promoting robust hair growth and scalp health.",
+    image: "/products5.png",
+    badge: "Limited Edition",
+    comesWithPouch: true,
+    sizes: ["Small", "Medium", "Big"],
+  },
+  {
+    _id: "prod6",
+    name: "Hair Growth Elixir",
+    price: 150,
+    category: "Hair Growth",
+    description:
+      "A potent concentrate of natural oils and vitamins designed to stimulate hair follicles and accelerate natural hair growth.",
+    image: "/product6.png",
+    badge: "Signature",
+    comesWithPouch: true,
+  },
+  {
+    _id: "prod7",
+    name: "Ayurvedic Hair Mask",
+    price: 95,
+    category: "Hair Care",
+    description:
+      "Ancient wisdom meets modern science in this herbal mask that deeply nourishes, detoxifies, and strengthens the hair.",
+    image: "/product7.png",
+    comesWithPouch: true,
+  },
+  {
+    _id: "prod8",
+    name: "Lina's Healing Hair Balm",
+    price: 80,
+    category: "Hair Care",
+    description:
+      "Soothe your scalp and seal split ends with our transformative healing balm, perfect for daily protection and shine.",
+    image: "/product8.png",
+    comesWithPouch: true,
+  },
+  {
+    _id: "prod9",
+    name: "Lina's Beard Booster Oil",
+    price: 70,
+    category: "Men",
+    description:
+      "Specially formulated for men, this oil softens facial hair, reduces itchiness, and promotes a thicker, healthier beard.",
+    image: "/product9.png",
+    comesWithPouch: true,
+  },
+  {
+    _id: "prod10",
+    name: "Anti-Dandruff Shampoo",
+    price: 85,
+    category: "Anti-Dandruff",
+    description:
+      "Say goodbye to flakes and scalp discomfort with our gentle yet effective anti-dandruff clarifying treatment.",
+    image: "/product1.png",
+    comesWithPouch: true,
+  },
+  {
+    _id: "prod11",
+    name: "Anti-Dandruff Oil",
+    price: 65,
+    category: "Anti-Dandruff",
+    description:
+      "A soothing, targeted scalp oil that eliminates dandruff at the root while providing instant cooling relief.",
+    image: "/product2.png",
+    comesWithPouch: true,
+  },
+  {
+    _id: "prod12",
+    name: "Anti-Dandruff Cream",
+    price: 75,
+    category: "Anti-Dandruff",
+    description:
+      "Intense scalp hydration that prevents dryness and flakes, creating the perfect foundation for healthy hair growth.",
+    image: "/product3.png",
+    comesWithPouch: true,
+  },
+];
 
 
 // --- CUSTOM CURRENCY ICONS ---
@@ -5888,7 +6020,7 @@ const ProtectedRoute = ({ user, loading, children }) => {
 
 const App = () => {
   // --- ADMIN & AUTH STATE ---
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(allProducts);
   const [categories, setCategories] = useState([
     "Hair Care",
     "Moisturizers",
@@ -5943,6 +6075,8 @@ const App = () => {
           );
           return [...new Set(normalized)];
         });
+      } else {
+        setProducts(allProducts);
       }
 
       // Verify Auth (Cookie-based)
