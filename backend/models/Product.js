@@ -51,6 +51,10 @@ const ProductSchema = new mongoose.Schema({
     comesWithPouch: {
         type: Boolean,
         default: false
+    },
+    sku: {
+        type: String,
+        unique: true
     }
 }, { timestamps: true });
 

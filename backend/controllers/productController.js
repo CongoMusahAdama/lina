@@ -51,6 +51,11 @@ exports.getProduct = async (req, res) => {
 // @access  Private/Admin
 exports.createProduct = async (req, res) => {
     try {
+        if (!req.body.sku) {
+            // Generate a simple numeric SKU like LINA-1234
+            const randomNum = Math.floor(1000 + Math.random() * 9000);
+            req.body.sku = `LINA-${randomNum}`;
+        }
         const product = await Product.create(req.body);
         res.status(201).json({ success: true, data: product });
     } catch (error) {

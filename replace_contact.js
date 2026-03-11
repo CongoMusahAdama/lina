@@ -12,7 +12,11 @@ content = content.replace(/233552739280/g, '233551082163');
 content = content.replace(/\+233 552739280/g, '+233 55 108 2163');
 content = content.replace(/\+233 55 273 9280/g, '+233 55 108 2163');
 content = content.replace(/\+233 552 739 280/g, '+233 55 108 2163');
-content = content.replace(/\+233 544 477 261/g, '+233 54 816 4756 (Payment: Linas Essential)');
+// Replace MoMo Name
+content = content.replace(/FLORENCE ESHUN/g, 'Linas_Essentials');
+
+// Replace handles (generalized)
+content = content.replace(/@LinaHairCare/g, '@linas_essentials');
 
 fs.writeFileSync('src/App.jsx', content);
 

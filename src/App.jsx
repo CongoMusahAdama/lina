@@ -53,6 +53,7 @@ import {
   Sparkles,
   Upload,
   PackageX,
+  Ghost,
 } from "lucide-react";
 import "./App.css";
 import "./mobile.css";
@@ -286,6 +287,11 @@ const ProductDetailModal = () => {
 
           <div className="modal-info">
             <h2 className="modal-title serif">{name}</h2>
+            {selectedProduct.sku && (
+              <p className="modal-sku" style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '0.5rem', fontWeight: 600 }}>
+                Product ID: {selectedProduct.sku}
+              </p>
+            )}
             <p className="modal-price" style={{ color: "#16a34a", fontWeight: "700" }}>
               {finalDiscountPrice ? (
                 <>
@@ -351,41 +357,48 @@ const ProductDetailModal = () => {
               </div>
             </div>
 
-            <div className="modal-actions">
-              <button
-                className={`modal-add-btn ${justAdded ? "success" : ""}`}
-                onClick={handleAdd}
-              >
-                {justAdded ? (
-                  <>
-                    <CheckCircle size={20} /> In Your Cart!
-                  </>
-                ) : (
-                  <>
-                    <ShoppingBag size={20} /> Add to Cart — <span style={{ color: "var(--yellow-accent)", fontWeight: "800" }}>{badge || "Natural"}</span>
-                  </>
-                )}
-              </button>
+              <div className="modal-actions">
+                <button
+                  className={`modal-add-btn ${justAdded ? "success" : ""}`}
+                  onClick={handleAdd}
+                >
+                  {justAdded ? (
+                    <>
+                      <CheckCircle size={20} /> In Your Cart!
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingBag size={20} /> Add to Cart — <span style={{ color: "var(--yellow-accent)", fontWeight: "800" }}>{badge || "Natural"}</span>
+                    </>
+                  )}
+                </button>
 
-              <div className="modal-social-grid">
-                <a
-                  href={`https://wa.me/233551082163?text=${encodeURIComponent(`Hi Lina Hair Care! I'm interested in ordering ${qty} x ${name} (GH₵${discountPrice || price} each). Can you help me?`)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="modal-social-btn wa"
-                >
-                  <MessageCircle size={20} /> WhatsApp
-                </a>
-                <a
-                  href="https://ig.me/m/linahaircare"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="modal-social-btn ig"
-                >
-                  <Instagram size={20} /> Instagram
-                </a>
+                <div className="modal-social-grid">
+                  <a
+                    href={`https://wa.me/233551082163?text=${encodeURIComponent(`Hi Lina Hair Care! I'm interested in ordering:
+*Product:* ${name}
+*Product ID:* ${selectedProduct.sku || 'N/A'}
+*Size:* ${size || 'Standard'}
+*Quantity:* ${qty}
+*Price:* GH₵${finalDiscountPrice || price} each
+
+Can you help me?`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="modal-social-btn wa"
+                  >
+                    <MessageCircle size={20} /> WhatsApp
+                  </a>
+                  <a
+                    href="https://www.instagram.com/linas_essentials"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="modal-social-btn ig"
+                  >
+                    <Instagram size={20} /> Instagram
+                  </a>
+                </div>
               </div>
-            </div>
           </div>
         </div>
       </div>
@@ -663,14 +676,17 @@ const Navbar = ({ user }) => {
         </nav>
         <div className="mobile-nav-footer">
           <div className="mobile-social-links">
-            <a href="#">
+            <a href="https://www.instagram.com/linas_essentials" target="_blank" rel="noreferrer">
               <Instagram size={20} />
             </a>
-            <a href="#">
+            <a href="https://www.facebook.com/Lina’s.essentials" target="_blank" rel="noreferrer">
               <Facebook size={20} />
             </a>
-            <a href="#">
-              <Twitter size={20} />
+            <a href="https://www.tiktok.com/@linas_essentials" target="_blank" rel="noreferrer">
+              <span style={{ fontWeight: 800 }}>T</span>
+            </a>
+            <a href="https://www.snapchat.com/add/Linas_Essentials" target="_blank" rel="noreferrer">
+              <Ghost size={20} />
             </a>
           </div>
           <p>
@@ -798,6 +814,24 @@ const ProductCard = ({
         filter: isSoldOut ? "grayscale(100%)" : "none",
       }}
     >
+      {/* Product SKU Label */}
+      {props.sku && (
+        <div className="product-sku-tag" style={{
+          position: 'absolute',
+          top: '12px',
+          left: '12px',
+          background: 'rgba(255,255,255,0.9)',
+          padding: '4px 8px',
+          borderRadius: '6px',
+          fontSize: '0.65rem',
+          fontWeight: 700,
+          color: '#013220',
+          zIndex: 5,
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}>
+          {props.sku}
+        </div>
+      )}
       <div className="product-image-container">
         {isSoldOut ? (
           <div
@@ -1328,19 +1362,23 @@ const Footer = () => {
             <h4 className="footer-heading">Connect With Us</h4>
             <ul className="footer-links">
               <li>
-                <a href="#" className="flex items-center gap-2">
-                  <Instagram size={16} /> @LinaHairCare
+                <a href="https://www.instagram.com/linas_essentials" target="_blank" rel="noreferrer" className="flex items-center gap-2">
+                  <Instagram size={16} /> @linas_essentials
                 </a>
               </li>
               <li>
-                <a href="#" className="flex items-center gap-2">
-                  <Facebook size={16} /> @LinaHairCare
+                <a href="https://www.facebook.com/Lina’s.essentials" target="_blank" rel="noreferrer" className="flex items-center gap-2">
+                  <Facebook size={16} /> Lina’s.essentials
                 </a>
               </li>
               <li>
-                <a href="#" className="flex items-center gap-2">
-                  <span style={{ fontWeight: 800 }}>T</span> TikTok
-                  @LinaHairCare
+                <a href="https://www.tiktok.com/@linas_essentials" target="_blank" rel="noreferrer" className="flex items-center gap-2">
+                  <span style={{ fontWeight: 800 }}>T</span> @linas_essentials
+                </a>
+              </li>
+              <li>
+                <a href="https://www.snapchat.com/add/Linas_Essentials" target="_blank" rel="noreferrer" className="flex items-center gap-2">
+                  <Ghost size={16} /> @Linas_Essentials
                 </a>
               </li>
             </ul>
@@ -2286,9 +2324,9 @@ const ShopPage = ({ products = [], categories = [] }) => {
         activeCategory === "all" ||
         product.category?.toLowerCase() === activeCategory.toLowerCase();
 
-      const matchesSearch = product.name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
+      const matchesSearch = 
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (product.sku && product.sku.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesPrice = parseFloat(product.price) <= maxPrice;
 
       return matchesCategory && matchesSearch && matchesPrice;
@@ -3567,9 +3605,15 @@ const AdminProducts = ({
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [adminSearch, setAdminSearch] = useState("");
 
-  // Pagination & Sorting (Newest First)
-  const sortedProducts = [...products].sort((a, b) => {
+  // Filtering & Pagination & Sorting (Newest First)
+  const filteredProducts = products.filter(p => 
+    (p.name && p.name.toLowerCase().includes(adminSearch.toLowerCase())) || 
+    (p.sku && p.sku.toLowerCase().includes(adminSearch.toLowerCase()))
+  );
+
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
     const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
     const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
     return dateB - dateA;
@@ -3579,7 +3623,7 @@ const AdminProducts = ({
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = sortedProducts.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
   useEffect(() => {
     if (showModal) document.body.style.overflow = "hidden";
@@ -3598,7 +3642,7 @@ const AdminProducts = ({
     description: "",
     comesWithPouch: false,
     images: [],
-    discountPercentage: 0,
+    sku: "",
     sizes: [],
   });
 
@@ -3614,6 +3658,7 @@ const AdminProducts = ({
       comesWithPouch: !!prod.comesWithPouch,
       images: prod.images || (prod.image ? [prod.image] : []),
       discountPercentage: prod.discountPercentage || 0,
+      sku: prod.sku || "",
       sizes: prod.sizes || [],
     });
     setShowModal(true);
@@ -3632,6 +3677,7 @@ const AdminProducts = ({
       comesWithPouch: false,
       images: [],
       discountPercentage: 0,
+      sku: "",
       sizes: [],
     });
   };
@@ -3758,7 +3804,27 @@ const AdminProducts = ({
           <h1 className="serif">Product Library</h1>
           <p>Displaying all {products.length} products</p>
         </div>
-        <div className="header-actions">
+        <div className="header-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <div className="admin-search-wrap" style={{ position: 'relative' }}>
+            <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+            <input 
+              type="text" 
+              placeholder="Search by name or ID..." 
+              value={adminSearch}
+              onChange={(e) => {
+                setAdminSearch(e.target.value);
+                setCurrentPage(1);
+              }}
+              style={{
+                padding: '0.6rem 1rem 0.6rem 2.2rem',
+                borderRadius: '10px',
+                border: '1px solid #e2e8f0',
+                fontSize: '0.85rem',
+                width: '240px',
+                background: '#f8fafc'
+              }}
+            />
+          </div>
           <button
             onClick={() => {
               setEditingId(null);
@@ -3828,6 +3894,34 @@ const AdminProducts = ({
                         value={newProd.name}
                         onChange={(e) =>
                           setNewProd({ ...newProd, name: e.target.value })
+                        }
+                        style={{
+                          width: "100%",
+                          padding: "1rem",
+                          borderRadius: "14px",
+                          border: "1px solid #e2e8f0",
+                          background: "#f8fafc",
+                          fontSize: "1rem",
+                          marginBottom: "1rem"
+                        }}
+                      />
+                      <label
+                        style={{
+                          display: "block",
+                          marginBottom: "0.6rem",
+                          fontSize: "0.9rem",
+                          fontWeight: 700,
+                          color: "#334155",
+                        }}
+                      >
+                        Unique Product ID (SKU)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="LINA-001 (Optional)"
+                        value={newProd.sku}
+                        onChange={(e) =>
+                          setNewProd({ ...newProd, sku: e.target.value })
                         }
                         style={{
                           width: "100%",
@@ -4297,7 +4391,7 @@ const AdminProducts = ({
           <table className="admin-table">
             <thead>
               <tr>
-                <th style={{ width: "50px" }}>#</th>
+                <th>SKU</th>
                 <th>Product</th>
                 <th>Category</th>
                 <th>Sizes</th>
@@ -4312,7 +4406,7 @@ const AdminProducts = ({
                 const imgFallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(prod.name || "P")}&background=0d2f2f&color=fff&size=100`;
                 return (
                   <tr key={prod._id || prod.id || index}>
-                    <td data-label="#">{indexOfFirstItem + index + 1}</td>
+                    <td data-label="SKU" style={{ fontWeight: 800, color: '#013220', fontSize: '0.75rem' }}>{prod.sku || 'N/A'}</td>
                     <td data-label="Product">
                       <div className="flex items-center">
                         <img
@@ -5755,9 +5849,9 @@ const CheckoutPage = ({ addOrder }) => {
                 <div className="payment-number-card">
                   <div className="payment-number-info">
                     <p className="payment-method-label">MoMo / Direct Pay</p>
-                    <p className="payment-number">0552739280</p>
+                    <p className="payment-number">054 816 4756</p>
                     <p className="payment-acc-name">
-                      Account Name: <b>FLORENCE ESHUN</b>
+                      Account Name: <b>Linas_Essentials</b>
                     </p>
                     <p className="payment-warning">
                       <AlertTriangle size={12} /> Confirm name before
@@ -5766,6 +5860,25 @@ const CheckoutPage = ({ addOrder }) => {
                   </div>
                   <div className="payment-card-icon">
                     <Shield size={20} color="#16a34a" />
+                  </div>
+                </div>
+
+                <div className="social-payment-support" style={{ marginTop: '1.5rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+                   <p className="instruction-text" style={{ fontSize: '0.9rem', marginBottom: '0.8rem' }}>
+                    Or make a direct WhatsApp order:
+                  </p>
+                  <a href="https://wa.me/233551082163" target="_blank" rel="noreferrer" className="wa-payment-link flex items-center gap-2">
+                    <MessageCircle size={18} /> <strong>055 108 2163</strong>
+                  </a>
+                  
+                  <p className="instruction-text" style={{ fontSize: '0.8rem', marginTop: '1rem', opacity: 0.8 }}>
+                    You can also message us on social media for direct assistance:
+                  </p>
+                  <div className="flex gap-4" style={{ marginTop: '0.5rem' }}>
+                    <a href="https://www.tiktok.com/@linas_essentials" target="_blank" rel="noreferrer" title="TikTok"><span style={{ fontWeight: 800 }}>T</span></a>
+                    <a href="https://www.instagram.com/linas_essentials" target="_blank" rel="noreferrer" title="Instagram"><Instagram size={20} /></a>
+                    <a href="https://www.facebook.com/Lina’s.essentials" target="_blank" rel="noreferrer" title="Facebook"><Facebook size={20} /></a>
+                    <a href="https://www.snapchat.com/add/Linas_Essentials" target="_blank" rel="noreferrer" title="Snapchat"><Ghost size={20} /></a>
                   </div>
                 </div>
               </div>
