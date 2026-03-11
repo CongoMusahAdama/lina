@@ -286,7 +286,7 @@ const ProductDetailModal = () => {
 
           <div className="modal-info">
             <h2 className="modal-title serif">{name}</h2>
-            <p className="modal-price">
+            <p className="modal-price" style={{ color: "#16a34a", fontWeight: "700" }}>
               {finalDiscountPrice ? (
                 <>
                   <span
@@ -362,7 +362,7 @@ const ProductDetailModal = () => {
                   </>
                 ) : (
                   <>
-                    <ShoppingBag size={20} /> Add to Cart
+                    <ShoppingBag size={20} /> Add to Cart — <span style={{ color: "var(--yellow-accent)", fontWeight: "800" }}>{badge || "Natural"}</span>
                   </>
                 )}
               </button>
@@ -394,136 +394,7 @@ const ProductDetailModal = () => {
 };
 
 
-// Dynamic product data will be fetched from backend.
-const allProducts = [
-  {
-    _id: "prod1",
-    name: "Lina's Clarifying Shampoo",
-    price: 85,
-    category: "Hair Care",
-    description:
-      "Deeply cleanse and refresh your scalp with our signature clarifying shampoo, formulated with organic botanical extracts for ultimate purity.",
-    image: "/product1.png",
-    badge: "New Arrival",
-    comesWithPouch: true,
-    sizes: ["Small", "Medium", "Big"],
-  },
-  {
-    _id: "prod2",
-    name: "Lina's Minty Detangling Conditioner",
-    price: 90,
-    category: "Hair Care",
-    description:
-      "Experience the cooling sensation of mint while effortlessly detangling your locks for a smooth, manageable, and healthy finish.",
-    image: "/product2.png",
-    badge: "Best Seller",
-    comesWithPouch: true,
-    sizes: ["Small", "Medium", "Big"],
-  },
-  {
-    _id: "prod3",
-    name: "Stay Soft Leave-In Conditioner",
-    price: 75,
-    category: "Moisturizers",
-    description:
-      "Lock in moisture all day long with our lightweight, non-greasy leave-in formula that keeps your hair soft, shiny, and hydrated.",
-    image: "/product3.png",
-    comesWithPouch: true,
-  },
-  {
-    _id: "prod4",
-    name: "Lina's Deep Conditioner",
-    price: 110,
-    category: "Moisturizers",
-    description:
-      "Treat your hair to an intensive moisture mask that restores strength, elasticity, and luster to dry or damaged strands.",
-    image: "/product4.png",
-    comesWithPouch: true,
-  },
-  {
-    _id: "prod5",
-    name: "Moisturizing Hair Growth Butter",
-    price: 125,
-    category: "Hair Growth",
-    description:
-      "Our rich, whipped butter blend provides ultimate hydration while promoting robust hair growth and scalp health.",
-    image: "/products5.png",
-    badge: "Limited Edition",
-    comesWithPouch: true,
-    sizes: ["Small", "Medium", "Big"],
-  },
-  {
-    _id: "prod6",
-    name: "Hair Growth Elixir",
-    price: 150,
-    category: "Hair Growth",
-    description:
-      "A potent concentrate of natural oils and vitamins designed to stimulate hair follicles and accelerate natural hair growth.",
-    image: "/product6.png",
-    badge: "Signature",
-    comesWithPouch: true,
-  },
-  {
-    _id: "prod7",
-    name: "Ayurvedic Hair Mask",
-    price: 95,
-    category: "Hair Care",
-    description:
-      "Ancient wisdom meets modern science in this herbal mask that deeply nourishes, detoxifies, and strengthens the hair.",
-    image: "/product7.png",
-    comesWithPouch: true,
-  },
-  {
-    _id: "prod8",
-    name: "Lina's Healing Hair Balm",
-    price: 80,
-    category: "Hair Care",
-    description:
-      "Soothe your scalp and seal split ends with our transformative healing balm, perfect for daily protection and shine.",
-    image: "/product8.png",
-    comesWithPouch: true,
-  },
-  {
-    _id: "prod9",
-    name: "Lina's Beard Booster Oil",
-    price: 70,
-    category: "Men",
-    description:
-      "Specially formulated for men, this oil softens facial hair, reduces itchiness, and promotes a thicker, healthier beard.",
-    image: "/product9.png",
-    comesWithPouch: true,
-  },
-  {
-    _id: "prod10",
-    name: "Anti-Dandruff Shampoo",
-    price: 85,
-    category: "Anti-Dandruff",
-    description:
-      "Say goodbye to flakes and scalp discomfort with our gentle yet effective anti-dandruff clarifying treatment.",
-    image: "/product1.png",
-    comesWithPouch: true,
-  },
-  {
-    _id: "prod11",
-    name: "Anti-Dandruff Oil",
-    price: 65,
-    category: "Anti-Dandruff",
-    description:
-      "A soothing, targeted scalp oil that eliminates dandruff at the root while providing instant cooling relief.",
-    image: "/product2.png",
-    comesWithPouch: true,
-  },
-  {
-    _id: "prod12",
-    name: "Anti-Dandruff Cream",
-    price: 75,
-    category: "Anti-Dandruff",
-    description:
-      "Intense scalp hydration that prevents dryness and flakes, creating the perfect foundation for healthy hair growth.",
-    image: "/product3.png",
-    comesWithPouch: true,
-  },
-];
+
 
 
 // --- CUSTOM CURRENCY ICONS ---
@@ -982,11 +853,12 @@ const ProductCard = ({
           <div
             className="product-price-badge"
             style={{
-              backgroundColor: discountPrice ? "#ef4444" : "#fff",
-              color: discountPrice ? "#fff" : "#1e293b",
+              backgroundColor: discountPrice ? "#ef4444" : "#f0fdf4",
+              color: discountPrice ? "#fff" : "#16a34a",
+              border: discountPrice ? "none" : "1px solid #dcfce7",
             }}
           >
-            <span>GH₵{currentPrice}</span>
+            <span style={{ fontWeight: 800 }}>GH₵{currentPrice}</span>
           </div>
         )}
         {inCart && (
@@ -1008,7 +880,12 @@ const ProductCard = ({
 
         {/* Mobile subtitle using badge or short description */}
         {isMobile && (
-          <p className="product-mobile-subtitle">{badge || "LINA HAIR CARE"}</p>
+          <p
+            className="product-mobile-subtitle"
+            style={{ color: "var(--yellow-accent)", fontWeight: "700" }}
+          >
+            {badge || "LINA HAIR CARE"}
+          </p>
         )}
 
         {/* Hide complex details on mobile, show only on desktop */}
@@ -1029,7 +906,12 @@ const ProductCard = ({
                   GH₵{price}
                 </span>
               )}
-              <span style={{ color: discountPrice ? "#ef4444" : "inherit" }}>
+              <span
+                style={{
+                  color: discountPrice ? "#ef4444" : "#16a34a",
+                  fontWeight: "700",
+                }}
+              >
                 GH₵{currentPrice}
               </span>
             </p>
@@ -3132,11 +3014,14 @@ const AdminDashboard = ({
         <div className="sidebar-header">
           {!isMinimized && (
             <div className="flex items-center gap-4">
-              <img
-                src="/LHCP logo.jpeg"
-                alt="Lina Hair Care"
-                className="admin-logo"
-              />
+              <Link to="/" title="Go to Website">
+                <img
+                  src="/LHCP logo.jpeg"
+                  alt="Lina Hair Care"
+                  className="admin-logo"
+                  style={{ cursor: "pointer" }}
+                />
+              </Link>
               <div className="admin-profile-hint">
                 <h2
                   className="serif"
@@ -3242,14 +3127,34 @@ const AdminDashboard = ({
       <main className="admin-main">
         {/* Mobile Nav Toggle */}
         <div className="admin-mobile-nav">
-          <div className="flex items-center gap-3">
-            <Menu size={24} onClick={() => setIsMobileOpen(!isMobileOpen)} />
+          <div
+            className="flex items-center"
+            style={{ gap: "0.25rem", marginRight: "0.5rem" }}
+          >
+            <button
+              onClick={() => setIsMobileOpen(!isMobileOpen)}
+              style={{
+                background: "none",
+                border: "none",
+                padding: "8px",
+                display: "flex",
+                alignItems: "center",
+                color: "#013220",
+              }}
+            >
+              <Menu size={26} />
+            </button>
             <Link
               to="/"
-              style={{ color: "inherit", display: "flex" }}
-              title="View Store"
+              style={{
+                color: "#013220",
+                display: "flex",
+                padding: "8px",
+                marginLeft: "-8px",
+              }}
+              title="View Website"
             >
-              <Globe size={20} />
+              <Globe size={22} />
             </Link>
           </div>
           <h2
@@ -4653,15 +4558,15 @@ const ReceiptModal = ({ order, onClose }) => {
         >
           {/* Watermark Logo */}
           <img
-            src="/logo.jpeg"
+            src="/LHCP logo.jpeg"
             alt="Watermark"
             style={{
               position: "absolute",
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
-              opacity: 0.08,
-              width: "70%",
+              opacity: 0.05,
+              width: "80%",
               objectFit: "contain",
               pointerEvents: "none",
               zIndex: 0,
@@ -5276,7 +5181,7 @@ const AdminOrders = ({ orders, addOrder, updateOrder, products }) => {
   );
 };
 
-const AdminReceipts = ({ orders }) => {
+const AdminReceipts = ({ orders, updateOrder }) => {
   const [selectedReceipt, setSelectedReceipt] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -6020,7 +5925,7 @@ const ProtectedRoute = ({ user, loading, children }) => {
 
 const App = () => {
   // --- ADMIN & AUTH STATE ---
-  const [products, setProducts] = useState(allProducts);
+  const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([
     "Hair Care",
     "Moisturizers",
@@ -6076,7 +5981,7 @@ const App = () => {
           return [...new Set(normalized)];
         });
       } else {
-        setProducts(allProducts);
+        setProducts([]);
       }
 
       // Verify Auth (Cookie-based)
