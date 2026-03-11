@@ -1454,6 +1454,7 @@ const HomePage = ({ products = [], categories = [] }) => {
         id="collections"
         className="section-padding regimes-section"
         style={{
+          padding: "5rem 0",
           backgroundColor: "#013220",
           position: "relative",
           overflow: "hidden",
@@ -1476,16 +1477,7 @@ const HomePage = ({ products = [], categories = [] }) => {
               >
                 Proven Results
               </span>
-              <h2
-                className="serif"
-                style={{
-                  fontSize: "3.5rem",
-                  marginTop: "0.5rem",
-                  color: "white",
-                }}
-              >
-                Our Hair Care Regimes
-              </h2>
+
             </div>
             <Link
               to="/shop"
@@ -1518,16 +1510,7 @@ const HomePage = ({ products = [], categories = [] }) => {
 
             <div className="regimes-info-box reveal">
               <div className="premium-accent-line"></div>
-              <p className="regimes-intro serif">
-                Transform your hair with our scientifically-backed organic
-                formulations.
-              </p>
-              <p className="regimes-description">
-                Our regimes are designed to penetrate the hair shaft, providing
-                deep nourishment from root to tip. Whether you're focusing on
-                growth, moisture, or scalp health, Lina Hair Care provides the
-                ultimate solution.
-              </p>
+
 
               <ul className="regimes-list">
                 <li>
@@ -1544,13 +1527,13 @@ const HomePage = ({ products = [], categories = [] }) => {
                 </li>
               </ul>
 
-              <div className="flex gap-6 mt-12">
+              <div className="flex gap-6 mt-8">
                 <Link
                   to="/about"
                   className="cta-button-premium"
-                  style={{ background: "#FFD700", color: "#013220" }}
+                  style={{ background: "#FFD700", color: "#013220", padding: "0.8rem 1.8rem", fontSize: "0.8rem" }}
                 >
-                  <span>Learn More</span>
+                  <span>Our Story</span>
                   <ArrowRight size={18} />
                 </Link>
               </div>

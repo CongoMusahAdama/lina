@@ -2683,13 +2683,20 @@
   }
 
   .image-wrapper-stack {
-    flex-direction: column !important;
+    flex-direction: row !important;
+    gap: 1rem !important;
+    align-items: flex-end !important;
   }
 
-  .regimes-img-1,
+  .regimes-img-1 {
+    width: 55% !important;
+    height: 320px !important;
+    transform: none !important;
+  }
+
   .regimes-img-2 {
-    width: 100% !important;
-    height: auto !important;
+    width: 45% !important;
+    height: 260px !important;
     transform: none !important;
   }
 
