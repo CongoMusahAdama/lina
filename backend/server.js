@@ -27,6 +27,8 @@ const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
     'http://127.0.0.1:5173',
+    'https://linasessentails.netlify.app',
+    'https://www.linasessentails.netlify.app',
     'https://linahaircare.netlify.app',
     'https://www.linahaircare.netlify.app',
     'https://linahaircare.onrender.com',
