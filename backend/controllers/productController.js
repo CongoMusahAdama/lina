@@ -40,8 +40,13 @@ exports.getProducts = async (req, res) => {
         // Backfill SKUs for any existing products that don't have one
         for (const p of products) {
             if (!p.sku) {
-                p.sku = await generateUniqueSku();
-                await p.save();
+                try {
+                    p.sku = await generateUniqueSku();
+                    await p.save();
+                } catch (saveError) {
+                    console.error(`Failed to backfill SKU for ${p.name || p._id}:`, saveError.message);
+                    // Continue to next product instead of crashing
+                }
             }
         }
 
