@@ -376,11 +376,11 @@ const ProductDetailModal = () => {
                 <div className="modal-social-grid">
                   <a
                     href={`https://wa.me/233551082163?text=${encodeURIComponent(`Hi Lina Hair Care! I'm interested in ordering:
-*Product:* ${name}
-*Product ID:* ${selectedProduct.sku || 'N/A'}
-*Size:* ${size || 'Standard'}
-*Quantity:* ${qty}
-*Price:* GH₵${finalDiscountPrice || price} each
+🛍️ *Product:* ${name}${selectedProduct.sku ? ` (ID: ${selectedProduct.sku})` : ''}
+📏 *Size:* ${size || 'Standard'}
+🔢 *Quantity:* ${qty}
+💰 *Price:* GH₵${finalDiscountPrice || price} each
+🖼️ *Image:* ${window.location.origin}${image}
 
 Can you help me?`)}`}
                     target="_blank"
@@ -772,6 +772,7 @@ const ProductCard = ({
   stock,
   soldOutAt,
   comesWithPouch,
+  sku,
 }) => {
   const resolvedId = _id || id;
   const isSoldOut = status === "Sold Out" || stock === 0 || !!soldOutAt;
@@ -815,7 +816,7 @@ const ProductCard = ({
       }}
     >
       {/* Product SKU Label */}
-      {props.sku && (
+      {sku && (
         <div className="product-sku-tag" style={{
           position: 'absolute',
           top: '12px',
@@ -829,7 +830,7 @@ const ProductCard = ({
           zIndex: 5,
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
         }}>
-          {props.sku}
+          {sku}
         </div>
       )}
       <div className="product-image-container">
@@ -985,7 +986,9 @@ const ProductCard = ({
                 </span>
               ) : (
                 <a
-                  href={`https://wa.me/233552739280`}
+                  href={`https://wa.me/233551082163?text=${encodeURIComponent(
+                    `Hi Lina! I'd like to order:\n\n🛍️ *${name}*${sku ? ` (SKU: ${sku})` : ''}\n💰 Price: GHS${currentPrice}\n🖼️ Product image: ${window.location.origin}${resolvedImage}\n\nPlease confirm availability. Thank you! 🙏`
+                  )}`}
                   target="_blank"
                   rel="noreferrer"
                   className="direct-wa-button"
@@ -1077,9 +1080,9 @@ const CartDrawer = () => {
     if (cartItems.length === 0) return "";
     const lines = cartItems.map(
       (i) =>
-        `• ${i.name} ${i.selectedSize ? `(${i.selectedSize}) ` : ""}x${i.qty} — GH₵${(parseFloat(i.price) * i.qty).toFixed(2)}`,
+        `• ${i.name}${i.sku ? ` [${i.sku}]` : ''} ${i.selectedSize ? `(${i.selectedSize}) ` : ""}x${i.qty} — GHS${(parseFloat(i.price) * i.qty).toFixed(2)}\n  🖼️ ${window.location.origin}${i.image}`,
     );
-    return `Hi Lina Hair Care Products! I'd like to place an order:\n\n${lines.join("\n")}\n\n*Total: GH₵${cartTotal.toFixed(2)}*\n\nPlease confirm my order. Thank you! 🙏`;
+    return `Hi Lina Hair Care Products! I'd like to place an order:\n\n${lines.join("\n\n")}\n\n*Total: GHS${cartTotal.toFixed(2)}*\n\nPlease confirm my order. Thank you! 🙏`;
   };
 
   const msg = buildOrderMessage().replace(/GH₵/g, "GHS");
@@ -3809,7 +3812,7 @@ const AdminProducts = ({
             <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
             <input 
               type="text" 
-              placeholder="Search by name or ID..." 
+              placeholder="Search by name or SKU..." 
               value={adminSearch}
               onChange={(e) => {
                 setAdminSearch(e.target.value);
@@ -4902,20 +4905,53 @@ const AdminOrders = ({ orders, addOrder, updateOrder, products }) => {
     });
   };
 
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Filtering
+  const filteredOrders = orders.filter(o => {
+    const s = searchTerm.toLowerCase();
+    return (
+      (o.customer && o.customer.toLowerCase().includes(s)) ||
+      (o.orderId && o.orderId.toLowerCase().includes(s)) ||
+      (o.phone && o.phone.includes(searchTerm)) ||
+      (o._id && o._id.toString().toLowerCase().includes(s))
+    );
+  });
+
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = orders.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(orders.length / itemsPerPage);
+  const currentItems = filteredOrders.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
 
   return (
     <div className="dashboard-view fade-in">
       <header className="admin-header">
         <div className="page-title">
           <h1 className="serif">Order Book</h1>
-          <p>Manual WhatsApp Sales Entry — {orders.length} Records</p>
+          <p>Manual WhatsApp Sales Entry — {filteredOrders.length} Records</p>
+        </div>
+        <div className="admin-search-wrap" style={{ position: 'relative' }}>
+          <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+          <input 
+            type="text" 
+            placeholder="Search customer, ID or phone..." 
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+            style={{
+              padding: '0.6rem 1rem 0.6rem 2.2rem',
+              borderRadius: '10px',
+              border: '1px solid #e2e8f0',
+              fontSize: '0.85rem',
+              width: '240px',
+              background: '#f8fafc'
+            }}
+          />
         </div>
         <div
           className="header-actions"
@@ -5571,20 +5607,48 @@ const AdminCategories = ({ categories, setCategories }) => {
 };
 
 const AdminInventory = ({ products }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Filtering
+  const filteredProducts = products.filter(p => 
+    (p.name && p.name.toLowerCase().includes(searchTerm.toLowerCase())) || 
+    (p.sku && p.sku.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = products.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const currentItems = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
   return (
     <div className="dashboard-view fade-in">
       <header className="admin-header">
         <div className="page-title">
           <h1 className="serif">Inventory Health</h1>
-          <p>Real-time stock tracking — {products.length} Items</p>
+          <p>Real-time stock tracking — {filteredProducts.length} Items</p>
+        </div>
+        <div className="admin-search-wrap" style={{ position: 'relative' }}>
+          <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+          <input 
+            type="text" 
+            placeholder="Search products or SKU..." 
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+            style={{
+              padding: '0.6rem 1rem 0.6rem 2.2rem',
+              borderRadius: '10px',
+              border: '1px solid #e2e8f0',
+              fontSize: '0.85rem',
+              width: '260px',
+              background: '#f8fafc'
+            }}
+          />
         </div>
       </header>
 

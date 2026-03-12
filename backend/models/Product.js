@@ -58,4 +58,20 @@ const ProductSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
+// Auto-generate a unique SKU if one is not provided
+ProductSchema.pre('save', async function (next) {
+    if (!this.sku) {
+        let unique = false;
+        while (!unique) {
+            const candidate = 'LINA-' + Math.random().toString(36).toUpperCase().slice(2, 8);
+            const existing = await mongoose.model('Product').findOne({ sku: candidate });
+            if (!existing) {
+                this.sku = candidate;
+                unique = true;
+            }
+        }
+    }
+    next();
+});
+
 module.exports = mongoose.model('Product', ProductSchema);

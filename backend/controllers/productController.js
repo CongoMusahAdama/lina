@@ -1,5 +1,15 @@
 const Product = require('../models/Product');
 
+// Helper: guaranteed unique SKU
+const generateUniqueSku = async () => {
+    let sku, exists;
+    do {
+        sku = 'LINA-' + Math.random().toString(36).toUpperCase().slice(2, 8);
+        exists = await Product.findOne({ sku });
+    } while (exists);
+    return sku;
+};
+
 // @desc    Get all products
 // @route   GET /api/products
 // @access  Public
@@ -27,6 +37,14 @@ exports.getProducts = async (req, res) => {
             await Product.deleteMany({ _id: { $in: toDeleteIds } });
         }
 
+        // Backfill SKUs for any existing products that don't have one
+        for (const p of products) {
+            if (!p.sku) {
+                p.sku = await generateUniqueSku();
+                await p.save();
+            }
+        }
+
         res.status(200).json({ success: true, count: products.length, data: products });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -51,11 +69,7 @@ exports.getProduct = async (req, res) => {
 // @access  Private/Admin
 exports.createProduct = async (req, res) => {
     try {
-        if (!req.body.sku) {
-            // Generate a simple numeric SKU like LINA-1234
-            const randomNum = Math.floor(1000 + Math.random() * 9000);
-            req.body.sku = `LINA-${randomNum}`;
-        }
+        // Let the pre-save hook handle SKU generation if none provided
         const product = await Product.create(req.body);
         res.status(201).json({ success: true, data: product });
     } catch (error) {
