@@ -584,6 +584,11 @@ const Navbar = ({ user }) => {
               <Link to="/about" className="nav-link">
                 About
               </Link>
+              {user && (
+                <Link to="/admin" className="nav-link" style={{ color: 'var(--teal-primary)', fontWeight: 700 }}>
+                  Dashboard
+                </Link>
+              )}
             </nav>
           </div>
 
@@ -645,6 +650,16 @@ const Navbar = ({ user }) => {
           </button>
         </div>
         <nav className="mobile-nav-links">
+          {user && (
+            <Link
+              to="/admin"
+              className="mobile-nav-link"
+              style={{ color: 'var(--teal-primary)', borderBottom: '2px solid rgba(0,200,200,0.2)' }}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Admin Dashboard 🛠️
+            </Link>
+          )}
           <Link
             to="/"
             className="mobile-nav-link"
@@ -704,7 +719,7 @@ const Navbar = ({ user }) => {
   );
 };
 
-const Hero = () => {
+const Hero = ({ user }) => {
   return (
     <section className="hero">
       <div className="hero-bg-accent hero-bg-accent-1"></div>
@@ -716,6 +731,29 @@ const Hero = () => {
         className="hero-image active"
       />
       <div className="hero-overlay"></div>
+
+      {/* Admin Quick Back Button */}
+      {user && (
+        <div style={{ position: 'absolute', top: '100px', left: '2rem', zIndex: 100 }}>
+          <Link to="/admin" className="dashboard-shortcut-btn" style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.6rem',
+            background: 'rgba(1, 50, 32, 0.8)',
+            color: 'white',
+            padding: '0.6rem 1rem',
+            borderRadius: '12px',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            fontSize: '0.8rem',
+            fontWeight: 700,
+            boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
+          }}>
+            <LayoutDashboard size={16} />
+            <span>Go to Dashboard</span>
+          </Link>
+        </div>
+      )}
 
       <div className="hero-content-wrapper">
         <div className="hero-content">
@@ -1428,7 +1466,7 @@ const Footer = () => {
 
 // --- PAGE COMPONENTS ---
 
-const HomePage = ({ products = [], categories = [] }) => {
+const HomePage = ({ products = [], categories = [], user }) => {
   const [activeCategory, setActiveCategory] = useState("all");
 
   const categoryTabs = [
@@ -1490,7 +1528,7 @@ const HomePage = ({ products = [], categories = [] }) => {
 
   return (
     <>
-      <Hero />
+      <Hero user={user} />
       <section
         id="collections"
         className="section-padding regimes-section"
@@ -3031,10 +3069,28 @@ const AdminDashboard = ({
 
   return (
     <div className={`dashboard-layout ${isMinimized ? "minimized" : ""}`}>
+      {/* Mobile Sidebar Overlay */}
+      {isMobileOpen && (
+        <div 
+          className="admin-sidebar-overlay" 
+          onClick={() => setIsMobileOpen(false)}
+        ></div>
+      )}
+
       {/* Sidebar */}
       <aside
         className={`admin-sidebar ${isMobileOpen ? "mobile-open" : ""} ${isMinimized ? "minimized" : ""}`}
       >
+        {/* Mobile Close Button */}
+        <div className="mobile-only" style={{ position: 'absolute', right: '1rem', top: '1rem', zIndex: 1001 }}>
+          <button 
+            onClick={() => setIsMobileOpen(false)}
+            style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '0.5rem', borderRadius: '50%' }}
+          >
+            <X size={20} />
+          </button>
+        </div>
+
         <div className="sidebar-header">
           {!isMinimized && (
             <div className="flex items-center gap-4">
@@ -6332,7 +6388,7 @@ const App = () => {
               <Route
                 path="/"
                 element={
-                  <HomePage products={products} categories={categories} />
+                  <HomePage products={products} categories={categories} user={user} />
                 }
               />
               <Route
