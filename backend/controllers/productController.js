@@ -15,43 +15,15 @@ const generateUniqueSku = async () => {
 // @access  Public
 exports.getProducts = async (req, res) => {
     try {
-        let products = await Product.find().sort({ createdAt: -1 });
+        const products = await Product.find().sort({ createdAt: -1 });
 
-        const now = new Date();
-        const threeDaysMs = 3 * 24 * 60 * 60 * 1000;
-        const toDeleteIds = [];
-
-        products = products.filter(p => {
-            const isSoldOut = p.status === 'Sold Out' || p.stock === 0 || !!p.soldOutAt;
-            if (isSoldOut && p.soldOutAt) {
-                const soldDate = new Date(p.soldOutAt);
-                if (now - soldDate > threeDaysMs) {
-                    toDeleteIds.push(p._id);
-                    return false;
-                }
-            }
-            return true;
+        res.status(200).json({
+            success: true,
+            count: products.length,
+            data: products
         });
-
-        if (toDeleteIds.length > 0) {
-            await Product.deleteMany({ _id: { $in: toDeleteIds } });
-        }
-
-        // Backfill SKUs for any existing products that don't have one
-        for (const p of products) {
-            if (!p.sku) {
-                try {
-                    p.sku = await generateUniqueSku();
-                    await p.save();
-                } catch (saveError) {
-                    console.error(`Failed to backfill SKU for ${p.name || p._id}:`, saveError.message);
-                    // Continue to next product instead of crashing
-                }
-            }
-        }
-
-        res.status(200).json({ success: true, count: products.length, data: products });
     } catch (error) {
+        console.error('Error fetching products:', error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
@@ -65,7 +37,7 @@ exports.getProduct = async (req, res) => {
         if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
         res.status(200).json({ success: true, data: product });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
 
@@ -74,7 +46,6 @@ exports.getProduct = async (req, res) => {
 // @access  Private/Admin
 exports.createProduct = async (req, res) => {
     try {
-        // Let the pre-save hook handle SKU generation if none provided
         const product = await Product.create(req.body);
         res.status(201).json({ success: true, data: product });
     } catch (error) {
@@ -87,13 +58,12 @@ exports.createProduct = async (req, res) => {
 // @access  Private/Admin
 exports.updateProduct = async (req, res) => {
     try {
-        let product = await Product.findById(req.params.id);
-        if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
-
-        product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+        const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true
         });
+
+        if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
 
         res.status(200).json({ success: true, data: product });
     } catch (error) {
@@ -106,13 +76,12 @@ exports.updateProduct = async (req, res) => {
 // @access  Private/Admin
 exports.deleteProduct = async (req, res) => {
     try {
-        const product = await Product.findById(req.params.id);
+        const product = await Product.findByIdAndDelete(req.params.id);
+        
         if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
-
-        await product.deleteOne();
 
         res.status(200).json({ success: true, message: 'Product removed' });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        res.status(500).json({ success: false, message: 'Server Error' });
     }
 };

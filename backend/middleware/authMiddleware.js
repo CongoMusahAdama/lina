@@ -7,18 +7,25 @@ const protect = async (req, res, next) => {
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         // Get token from header
         token = req.headers.authorization.split(' ')[1];
-    } else if (req.cookies.token) {
+        console.log('Token found in Authorization header');
+    } else if (req.cookies && req.cookies.token) {
         // Get token from cookie
         token = req.cookies.token;
+        console.log('Token found in cookie');
     }
 
     if (!token) {
+        console.warn('No token provided for protected route:', req.originalUrl);
         return res.status(401).json({ success: false, message: 'Not authorized, no token provided' });
     }
 
     try {
-        // Verify token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const secret = process.env.JWT_SECRET ? process.env.JWT_SECRET.trim() : null;
+        if (!secret) {
+            console.error('CRITICAL: JWT_SECRET is not defined in environment variables');
+        }
+        
+        const decoded = jwt.verify(token, secret);
 
         // Fetch admin from database
         req.user = await Admin.findById(decoded.id).select('-password');
@@ -29,7 +36,10 @@ const protect = async (req, res, next) => {
 
         next();
     } catch (error) {
-        console.error('Auth check error:', error);
+        console.error('Auth verification error:', error.message);
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ success: false, message: 'Not authorized, token expired' });
+        }
         return res.status(401).json({ success: false, message: 'Not authorized, invalidated token' });
     }
 };

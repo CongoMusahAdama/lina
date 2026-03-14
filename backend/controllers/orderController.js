@@ -23,6 +23,7 @@ exports.createOrder = async (req, res) => {
         }
 
         const order = await Order.create(req.body);
+
         res.status(201).json({ success: true, data: order });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
@@ -59,6 +60,37 @@ exports.deleteOrder = async (req, res) => {
         await order.deleteOne();
 
         res.status(200).json({ success: true, message: 'Order removed' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Track orders by ID and Phone
+// @route   GET /api/orders/track
+// @access  Public
+exports.trackOrders = async (req, res) => {
+    try {
+        const { orderId, phone } = req.query;
+        if (!orderId || !phone) {
+            return res.status(400).json({ success: false, message: 'Order ID and Phone number are required' });
+        }
+
+        // Normalize phone for comparison
+        const normalizedInput = phone.replace(/[^0-9]/g, '');
+
+        // Find specific order
+        const order = await Order.findOne({
+            $and: [
+                { orderId: orderId.trim() },
+                { phone: { $regex: normalizedInput, $options: 'i' } }
+            ]
+        });
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Order not found. Please check your ID and Phone.' });
+        }
+
+        res.status(200).json({ success: true, data: order });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

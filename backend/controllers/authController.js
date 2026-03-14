@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken');
 
 // Generate Token and set cookie
 const sendTokenResponse = (admin, statusCode, res) => {
-    const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, {
+    const secret = process.env.JWT_SECRET ? process.env.JWT_SECRET.trim() : null;
+    const token = jwt.sign({ id: admin._id }, secret, {
         expiresIn: process.env.JWT_EXPIRE || '30d',
     });
 
@@ -11,7 +12,7 @@ const sendTokenResponse = (admin, statusCode, res) => {
         expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'None' // Necessary for cross-site cookie if frontend/backend are on different domains
+        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax'
     };
 
     res.status(statusCode)
@@ -33,7 +34,6 @@ const sendTokenResponse = (admin, statusCode, res) => {
 exports.login = async (req, res) => {
     try {
         const { identifier, password } = req.body;
-        console.log(`Login attempt for: ${identifier}`);
 
         // Find admin by email OR phone
         const admin = await Admin.findOne({
@@ -44,13 +44,11 @@ exports.login = async (req, res) => {
         }).select('+password');
 
         if (!admin) {
-            console.log(`Admin NOT found for identifier: ${identifier}`);
             return res.status(401).json({ success: false, message: 'Invalid credentials. User not found.' });
         }
 
         // Check password
         const isMatch = await admin.matchPassword(password);
-        console.log(`Password match result: ${isMatch}`);
 
         if (!isMatch) {
             return res.status(401).json({ success: false, message: 'Invalid credentials. Incorrect password.' });

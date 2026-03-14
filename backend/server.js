@@ -4,10 +4,11 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const Admin = require('./models/Admin');
-const helmet = require('helmet');
-// express-mongo-sanitize removed — incompatible with Express v5 (req.query is read-only)
-// xss-clean also removed — deprecated and incompatible with Express v5
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const rateLimit = require('express-rate-limit');
 
 // Load environment variables
 dotenv.config();
@@ -52,11 +53,26 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Requested-With']
 }));
-app.use(helmet({
-    crossOriginResourcePolicy: false, // Helps when assets are served from different domains
-}));
+
+// app.use(helmet({
+//     crossOriginResourcePolicy: false,
+// }));
+
+// // Rate limiting
+// const limiter = rateLimit({
+//     windowMs: 15 * 60 * 1000, // 15 minutes
+//     max: 100 // limit each IP to 100 requests per windowMs
+// });
+// app.use('/api', limiter);
+
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
+
+// Sanitize data
+// app.use(mongoSanitize());
+
+// Prevent XSS attacks
+// app.use(xss());
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
@@ -92,7 +108,7 @@ const seedAdmin = async () => {
         }
 
         const adminData = {
-            name: process.env.ADMIN_NAME || 'Florence Admin',
+            name: process.env.ADMIN_NAME || 'Lina Admin',
             email: adminEmail,
             phone: adminPhone,
             password: adminPassword,
@@ -124,7 +140,11 @@ app.listen(PORT, async () => {
 
 // Global Error Handler (Hides stack traces in production)
 app.use((err, req, res, next) => {
-    console.error(err.stack);
+    if (process.env.NODE_ENV === 'development') {
+        console.error('FULL ERROR:', err);
+    } else {
+        console.error(err.message);
+    }
 
     res.status(err.status || 500).json({
         success: false,
