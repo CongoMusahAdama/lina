@@ -285,9 +285,9 @@
 
   /* ── Cinematic model photo – face centered right ── */
   .hero-image {
-    object-position: 80% center !important;
+    object-position: center 10% !important;
     opacity: 0 !important;
-    transform: scale(1.06) !important;
+    transform: scale(1.02) !important;
     transition: opacity 1.5s ease-in-out !important;
     will-change: opacity;
   }
