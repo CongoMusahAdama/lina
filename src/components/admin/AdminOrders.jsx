@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Search, Plus, X, Sparkles, Eye, Trash2 } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import ReceiptModal from "../modals/ReceiptModal";
 
 const AdminOrders = ({ orders, fetchOrders, addOrder, updateOrder, deleteOrder, products }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
+  const location = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const searchId = searchParams.get("search");
+    if (searchId) {
+      setSearchTerm(searchId);
+    }
+  }, [location.search]);
 
   useEffect(() => {
     if (showModal) document.body.style.overflow = "hidden";

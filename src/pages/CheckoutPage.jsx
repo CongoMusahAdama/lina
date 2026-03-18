@@ -89,7 +89,7 @@ const CheckoutPage = ({ addOrder }) => {
     if (res.success) {
       const order = res.data;
       const itemsList = cartItems.map((i) => `• ${i.name} (${i.qty})`).join("\n");
-      const trackLink = `https://linahaircare.com/track?orderId=${order.orderId}&phone=${formData.phone}`; // Assuming the domain
+      const dashboardLink = `${window.location.origin}/admin/orders?search=${order.orderId}`;
       const whatsappMsg =
         `🛍️ *Lina Hair Care - New Order Received!*\n\n` +
         `*Order ID:* ${order.orderId}\n\n` +
@@ -101,8 +101,7 @@ const CheckoutPage = ({ addOrder }) => {
         `*Subtotal:* GH₵${cartTotal.toFixed(2)}\n` +
         `*Delivery:* GH₵${deliveryFee.toFixed(2)}\n` +
         `*Total Amount:* GH₵${totalWithDelivery.toFixed(2)}\n\n` +
-        `🚚 *Track Order:* ${trackLink}\n\n` +
-        `Check the admin dashboard for details.`;
+        `🔗 *View in Dashboard:* ${dashboardLink}`;
 
       const whatsappLink = `https://wa.me/233551082163?text=${encodeURIComponent(whatsappMsg)}`;
 
