@@ -114,16 +114,22 @@ const CheckoutPage = ({ addOrder }) => {
         colors: ["#013220", "#FFD700", "#ffffff"]
       });
 
+      const trackUrl = `/track?orderId=${order.orderId}&phone=${encodeURIComponent(formData.phone)}`;
+
       Swal.fire({
-        title: "Order Successful!",
+        title: "🎉 Order Placed!",
         html: `
-          <div style="text-align: center;">
-            <p style="margin-bottom: 1.5rem;">Your order <b>#${order.orderId || order._id}</b> has been received and is being reviewed.</p>
-            <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 2rem;">Please click the button below to notify us on WhatsApp for faster processing.</p>
-            <a href="${whatsappLink}" target="_blank" rel="noreferrer" id="whatsapp-redirect-btn" class="swal2-confirm swal2-styled" style="background-color: #25D366; display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; border-radius: 12px; padding: 1rem 1.5rem;">
-               <MessageCircle size={20} />
-               Continue to WhatsApp
-            </a>
+          <div style="text-align: center; font-family: inherit;">
+            <p style="margin-bottom: 0.75rem; font-size: 1rem;">Your order <b>#${order.orderId || order._id}</b> has been received!</p>
+            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1.75rem;">We've notified the admin. You can track your order below or notify us on WhatsApp for faster processing.</p>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; align-items: center;">
+              <a href="${trackUrl}" id="track-order-btn" style="background: #013220; color: white; display: inline-flex; align-items: center; gap: 0.6rem; text-decoration: none; border-radius: 12px; padding: 0.9rem 1.75rem; font-weight: 700; font-size: 0.9rem; width: 100%; max-width: 280px; justify-content: center;">
+                📦 Track Your Order
+              </a>
+              <a href="${whatsappLink}" target="_blank" rel="noreferrer" id="whatsapp-redirect-btn" style="background-color: #25D366; color: white; display: inline-flex; align-items: center; gap: 0.6rem; text-decoration: none; border-radius: 12px; padding: 0.9rem 1.75rem; font-weight: 700; font-size: 0.9rem; width: 100%; max-width: 280px; justify-content: center;">
+                💬 Notify Admin on WhatsApp
+              </a>
+            </div>
           </div>
         `,
         icon: "success",
@@ -131,10 +137,11 @@ const CheckoutPage = ({ addOrder }) => {
         allowOutsideClick: false,
         footer: '<a href="/" style="color: #64748b; text-decoration: none; font-size: 0.8rem;">Return to Homepage</a>',
       });
-      
+
+      // Auto-notify admin on WhatsApp in the background regardless of customer action
       setTimeout(() => {
         window.open(whatsappLink, "_blank");
-      }, 3000);
+      }, 2500);
 
     }
     setIsSubmitting(false);
