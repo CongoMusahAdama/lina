@@ -5,7 +5,12 @@ export const API_URL =
     : "https://lina-0tkg.onrender.com/api");
 
 export const apiRequest = async (endpoint, method = "GET", body = null) => {
-  const token = localStorage.getItem("lina_auth_token");
+  let token = null;
+  try {
+    token = localStorage.getItem("lina_auth_token");
+  } catch (e) {
+    console.warn("Storage access blocked", e);
+  }
   const headers = {
     "Content-Type": "application/json",
     ...(token && { Authorization: `Bearer ${token}` }),

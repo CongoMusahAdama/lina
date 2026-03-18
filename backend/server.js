@@ -124,7 +124,15 @@ const seedAdmin = async () => {
             await Admin.create(adminData);
             console.log('--- Default Admin Seeded Successfully ---');
         } else {
-            console.log('--- Admin Already Exists, Skipping Seed ---');
+            // Synchronize existing admin with .env credentials
+            adminExists.name = adminData.name;
+            adminExists.email = adminData.email;
+            adminExists.phone = adminData.phone;
+            // Only update password if explicitly changed in .env or if we want to enforce it
+            // For now, let's keep it consistent with the user's desire to use the .env for login
+            adminExists.password = adminData.password;
+            await adminExists.save();
+            console.log('--- Admin Already Exists, Synchronized with .env ---');
         }
     } catch (error) {
         console.error('Seeding error:', error.message);

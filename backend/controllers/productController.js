@@ -49,6 +49,7 @@ exports.createProduct = async (req, res) => {
         const product = await Product.create(req.body);
         res.status(201).json({ success: true, data: product });
     } catch (error) {
+        console.error('CREATE PRODUCT ERROR:', error);
         res.status(400).json({ success: false, message: error.message });
     }
 };
@@ -67,6 +68,7 @@ exports.updateProduct = async (req, res) => {
 
         res.status(200).json({ success: true, data: product });
     } catch (error) {
+        console.error('UPDATE PRODUCT ERROR:', error);
         res.status(400).json({ success: false, message: error.message });
     }
 };

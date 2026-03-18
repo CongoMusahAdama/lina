@@ -59,7 +59,7 @@ const ProductSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Auto-generate a unique SKU if one is not provided
-ProductSchema.pre('save', async function (next) {
+ProductSchema.pre('save', async function () {
     if (!this.sku) {
         let unique = false;
         while (!unique) {
@@ -71,7 +71,6 @@ ProductSchema.pre('save', async function (next) {
             }
         }
     }
-    next();
 });
 
 module.exports = mongoose.model('Product', ProductSchema);

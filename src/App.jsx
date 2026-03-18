@@ -128,7 +128,11 @@ const App = () => {
 
   const handleLogin = (userData) => {
     if (userData.token) {
-      localStorage.setItem("lina_auth_token", userData.token);
+      try {
+        localStorage.setItem("lina_auth_token", userData.token);
+      } catch (e) {
+        console.error("Failed to save token to localStorage", e);
+      }
     }
     setUser(userData);
   };
@@ -171,6 +175,12 @@ const App = () => {
         timer: 1500,
         showConfirmButton: false,
       });
+    } else {
+      Swal.fire({
+        title: "Creation Failed",
+        text: res.message || "An error occurred while creating the product.",
+        icon: "error",
+      });
     }
     return res.success;
   };
@@ -185,6 +195,12 @@ const App = () => {
         icon: "success",
         timer: 1500,
         showConfirmButton: false,
+      });
+    } else {
+      Swal.fire({
+        title: "Update Failed",
+        text: res.message || "An error occurred while updating the product.",
+        icon: "error",
       });
     }
     return res.success;

@@ -177,8 +177,9 @@ const AdminProducts = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const priceVal = parseFloat(newProd.price);
-    const discPercent = parseFloat(newProd.discountPercentage || 0);
+    const priceVal = parseFloat(newProd.price) || 0;
+    const discPercent = parseFloat(newProd.discountPercentage) || 0;
+    const stockVal = parseInt(newProd.stock) || 0;
     const calculatedDiscountPrice =
       discPercent > 0
         ? parseFloat((priceVal * (1 - discPercent / 100)).toFixed(2))
@@ -189,10 +190,13 @@ const AdminProducts = ({
       price: priceVal,
       discountPercentage: discPercent,
       discountPrice: calculatedDiscountPrice,
-      stock: parseInt(newProd.stock),
+      stock: stockVal,
       sizes: Array.isArray(newProd.sizes) ? newProd.sizes : [],
+      sku: newProd.sku?.trim() || "",
       image: newProd.images[0] || "/midnight.png",
     };
+
+    console.log("Submitting Product Data:", finalProdData);
 
     let success = false;
     if (editingId) {
@@ -312,33 +316,6 @@ const AdminProducts = ({
                           background: "#f8fafc",
                           fontSize: "1rem",
                           marginBottom: "1rem"
-                        }}
-                      />
-                      <label
-                        style={{
-                          display: "block",
-                          marginBottom: "0.6rem",
-                          fontSize: "0.9rem",
-                          fontWeight: 700,
-                          color: "#334155",
-                        }}
-                      >
-                        Unique Product ID (SKU)
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="LINA-001 (Optional)"
-                        value={newProd.sku}
-                        onChange={(e) =>
-                          setNewProd({ ...newProd, sku: e.target.value })
-                        }
-                        style={{
-                          width: "100%",
-                          padding: "1rem",
-                          borderRadius: "14px",
-                          border: "1px solid #e2e8f0",
-                          background: "#f8fafc",
-                          fontSize: "1rem",
                         }}
                       />
                     </div>
